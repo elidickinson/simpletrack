@@ -53,7 +53,7 @@ function simpletrack() {
 	
 	var getTimestamp = function() {
 		var d = new Date();
-		return d.getMonth() + "/" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes();
+		return d.getUTCMonth() + "/" + d.getUTCDate() + " " + d.getUTCHours() + ":" + d.getUTCMinutes();
 	}
 	
 	var setCookie = function(c_name,value,expiredays) {
