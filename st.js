@@ -15,18 +15,18 @@ function simpletrack() {
 		uri = location.href.replace(/https?:\/\/[^\/]+/i,'');
 		readData();
 		if(data.length >= 1) {
-			pop = data[data.length - 1].split("\t")[1];
+			pop = data[data.length - 1][1];
 			if(pop == uri)
 				return;
 		}
 		else {
 			// no pages stored, so add the referrer before adding current page
 			if(document.referrer != '')
-				data.push([new Date().getTime(),document.referrer]);
+				data.push([getTimestamp(),document.referrer]);
 		}
 
 		// push current site uri
-		data.push([new Date().getTime(),uri]);
+		data.push([getTimestamp(),uri]);
 
 		// drop as many page records as needed to keep cookie length reasonable
 		while(buildCookie() > 1024) {
@@ -41,8 +41,6 @@ function simpletrack() {
 		var outputArr = new Array();
 		for(i in data) {
 			record = data[i];
-			alert(record);
-			record = record.split("\t");
 			tstamp = record[0];
 			uri = record[1];
 			if(uri.match("^/")) {
@@ -53,6 +51,11 @@ function simpletrack() {
 		return outputArr.join("\n");
 	}
 	
+	var getTimestamp = function() {
+		var d = new Date();
+		return d.getMonth() + "/" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes();
+	}
+	
 	var setCookie = function(c_name,value,expiredays) {
 		var exdate=new Date();
 		exdate.setDate(exdate.getDate()+expiredays);
@@ -61,6 +64,7 @@ function simpletrack() {
 	}
 	
 	var getCookie = function(c_name) {
+		var c_start, c_end;
 		if (document.cookie.length>0) {
 			c_start=document.cookie.indexOf(c_name + "=");
 			if (c_start!=-1) {
@@ -75,6 +79,7 @@ function simpletrack() {
 	
 	var readData = function() {
 		var c = getCookie(cookieName);
+		var arr;
 		data = new Array();
 		if(c != '') {
 			arr = c.split("\n");
@@ -82,7 +87,6 @@ function simpletrack() {
 				data.push(arr[i].split("\t"));
 			}
 		}
-		alert("data="+data);
 	}
 	
 	var buildCookie = function() {
@@ -100,11 +104,13 @@ function simpletrack() {
 
 
 // deprecated
-function st_prettPrint() {
-	(new simpletrack()).prettyPrint();
+function st_prettyPrint() {
+	var st = new simpletrack();
+	return st.prettyPrint();
 }
 
 // deprecated
 function st_pushUrl() {
-	(new simpletrack()).trackPage();
+	var st = new simpletrack();
+	st.trackPage();
 }
