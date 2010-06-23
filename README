@@ -1,0 +1,29 @@
+Overview
+--------
+
+A very simple javascript-based web visitor behavioral tracking system. It keeps a running log of the last
+few pages viewed by the visitor (up to max 1kb of data). No server overhead at all since all the data is
+saved in the user's cookie.
+
+Default cookie expiration is one week.
+
+Released under GPLv3.
+
+Usage
+------
+
+On each page:
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+<script type="text/javascript">
+   st_pushUrl();
+</script>
+
+
+And then to stuff the data into a hidden form field:
+
+<input type="hidden" name="pages_viewed" id="pages_viewed" value=""/>
+
+<script  type="text/javascript">
+   document.getElementById('pages_viewed').value = st_prettyPrint();
+</script>
