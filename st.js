@@ -15,21 +15,21 @@ function simpletrack() {
 		uri = location.href.replace(/https?:\/\/[^\/]+/i,'');
 		readData();
 		if(data.length >= 1) {
-			pop = data[data.length - 1];
+			pop = data[data.length - 1].split("\t")[1];
 			if(pop == uri)
 				return;
 		}
 		else {
 			// no pages stored, so add the referrer before adding current page
 			if(document.referrer != '')
-				data.push(document.referrer);
+				data.push([new Date().getTime(),document.referrer]);
 		}
 
 		// push current site uri
-		data.push(uri);
+		data.push([new Date().getTime(),uri]);
 
 		// drop as many page records as needed to keep cookie length reasonable
-		while(data.join(' ').length > 1024) {
+		while(buildCookie() > 1024) {
 			data.shift();
 		}
 		writeData();
@@ -37,14 +37,20 @@ function simpletrack() {
 	
 	this.prettyPrint = function() {
 		readData();
-		baseuri = location.href.match(/https?:\/\/[^\/]+/i);
-		for(key in data) {
-			val = data[key];
-			if(val.match("^/")) {
-				data[key] = baseuri + val;
+		var baseuri = location.href.match(/https?:\/\/[^\/]+/i);
+		var outputArr = new Array();
+		for(i in data) {
+			record = data[i];
+			alert(record);
+			record = record.split("\t");
+			tstamp = record[0];
+			uri = record[1];
+			if(uri.match("^/")) {
+				uri = baseuri + uri;
 			}
+			outputArr.push(tstamp + "\t" + uri);
 		}
-		return data.join("\n");
+		return outputArr.join("\n");
 	}
 	
 	var setCookie = function(c_name,value,expiredays) {
@@ -68,17 +74,23 @@ function simpletrack() {
 	}
 	
 	var readData = function() {
-		c = getCookie(cookieName);
+		var c = getCookie(cookieName);
+		data = new Array();
 		if(c != '') {
-			data = c.split("\n");
+			arr = c.split("\n");
+			for(i in arr) {
+				data.push(arr[i].split("\t"));
+			}
 		}
-		else {
-			data = new Array();
-		}
+		alert("data="+data);
 	}
 	
 	var buildCookie = function() {
-		return data.join("\n");
+		var arr = new Array();
+		for(i in data) {
+			arr.push(data[i].join("\t"));
+		}
+		return arr.join("\n");
 	}
 	
 	var writeData = function() {
