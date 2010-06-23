@@ -5,7 +5,7 @@ A very simple javascript-based web visitor behavioral tracking system. It keeps 
 few pages viewed by the visitor (up to max 1kb of data). No server overhead at all since all the data is
 saved in the user's cookie.
 
-Default cookie expiration is one week.
+Default cookie expiration is one week. Default cookie name is "_st"
 
 Released under GPLv3.
 

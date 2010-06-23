@@ -1,3 +1,4 @@
+/* Simpletrack by Eli Dickinson - http://github.com/elidickinson/simpletrack */
 function st_setCookie(c_name,value,expiredays)
 {
 	var exdate=new Date();
