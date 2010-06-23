@@ -49,6 +49,14 @@ function st_pushUrl()
 {
 	uri = location.href.replace(/https?:\/\/[^\/]+/i,'');
 	arr = st_read();
+	if(arr.length >= 1) {
+		pop = arr[arr.length - 1];
+		if(pop == uri)
+			return;
+	}
+	else {
+		arr.push(document.referrer);
+	}
 	arr.push(uri);
 	while(st_arrLength(arr) > 1024) {
 		arr.shift();
@@ -61,7 +69,10 @@ function st_prettyPrint()
 	arr = st_read();
 	baseuri = location.href.match(/https?:\/\/[^\/]+/i);
 	for(key in arr) {
-		arr[key] = baseuri + arr[key];
+		val = arr[key];
+		if(val.match("^/")) {
+			arr[key] = baseuri + val;
+		}
 	}
 	return arr.join("\n");
 }
