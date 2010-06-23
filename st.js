@@ -1,79 +1,98 @@
 /* Simpletrack by Eli Dickinson - http://github.com/elidickinson/simpletrack */
-function st_setCookie(c_name,value,expiredays)
-{
-	var exdate=new Date();
-	exdate.setDate(exdate.getDate()+expiredays);
-	document.cookie=c_name+ "=" +escape(value)+
-	((expiredays==null) ? "" : ";expires="+exdate.toUTCString());
-}
 
-function st_getCookie(c_name)
-{
-	if (document.cookie.length>0)
-	  {
-	  c_start=document.cookie.indexOf(c_name + "=");
-	  if (c_start!=-1)
-	    {
-	    c_start=c_start + c_name.length+1;
-	    c_end=document.cookie.indexOf(";",c_start);
-	    if (c_end==-1) c_end=document.cookie.length;
-	    return unescape(document.cookie.substring(c_start,c_end));
-	    }
-	  }
-	return "";
-}
-
-function st_arrLength(arr) {
-	return arr.join('$').length;
-}
-
-function st_reset() {
-	st_setCookie("_st","",-100);
-}
-
-function st_read() {
-	c = st_getCookie("_st");
-	if(c != '') {
-		arr = c.split('$');
+function simpletrack() {
+	
+	var cookieName = "_st";
+	var cookieExpire = 7;
+	var data;
+	
+	this.resetCookie = function() {
+		// expiration in past deletes cookie
+		setCookie(cookieName,"",-100);
 	}
-	else {
-		arr = new Array();
-	}
-	return arr;
-}
+	
+	this.trackPage = function() {
+		uri = location.href.replace(/https?:\/\/[^\/]+/i,'');
+		readData();
+		if(data.length >= 1) {
+			pop = data[data.length - 1];
+			if(pop == uri)
+				return;
+		}
+		else {
+			// no pages stored, so add the referrer before adding current page
+			if(document.referrer != '')
+				data.push(document.referrer);
+		}
 
-function st_write(arr) {
-	st_setCookie("_st",arr.join('$'),7);
-}
+		// push current site uri
+		data.push(uri);
 
-function st_pushUrl()
-{
-	uri = location.href.replace(/https?:\/\/[^\/]+/i,'');
-	arr = st_read();
-	if(arr.length >= 1) {
-		pop = arr[arr.length - 1];
-		if(pop == uri)
-			return;
+		// drop as many page records as needed to keep cookie length reasonable
+		while(data.join(' ').length > 1024) {
+			data.shift();
+		}
+		writeData();
 	}
-	else {
-		arr.push(document.referrer);
+	
+	this.prettyPrint = function() {
+		readData();
+		baseuri = location.href.match(/https?:\/\/[^\/]+/i);
+		for(key in data) {
+			val = data[key];
+			if(val.match("^/")) {
+				data[key] = baseuri + val;
+			}
+		}
+		return data.join("\n");
 	}
-	arr.push(uri);
-	while(st_arrLength(arr) > 1024) {
-		arr.shift();
+	
+	var setCookie = function(c_name,value,expiredays) {
+		var exdate=new Date();
+		exdate.setDate(exdate.getDate()+expiredays);
+		document.cookie = c_name + "=" +escape(value) +
+			((expiredays==null) ? "" : ";expires="+exdate.toUTCString());
 	}
-	st_write(arr);
-}
-
-function st_prettyPrint()
-{
-	arr = st_read();
-	baseuri = location.href.match(/https?:\/\/[^\/]+/i);
-	for(key in arr) {
-		val = arr[key];
-		if(val.match("^/")) {
-			arr[key] = baseuri + val;
+	
+	var getCookie = function(c_name) {
+		if (document.cookie.length>0) {
+			c_start=document.cookie.indexOf(c_name + "=");
+			if (c_start!=-1) {
+				c_start=c_start + c_name.length+1;
+				c_end=document.cookie.indexOf(";",c_start);
+				if (c_end==-1) c_end=document.cookie.length;
+				return unescape(document.cookie.substring(c_start,c_end));
+			}
+		}
+		return "";
+	}
+	
+	var readData = function() {
+		c = getCookie(cookieName);
+		if(c != '') {
+			data = c.split("\n");
+		}
+		else {
+			data = new Array();
 		}
 	}
-	return arr.join("\n");
+	
+	var buildCookie = function() {
+		return data.join("\n");
+	}
+	
+	var writeData = function() {
+		setCookie(cookieName,buildCookie(),cookieExpire);
+	}
+}
+
+
+// deprecated
+function st_prettPrint() {
+	(new simpletrack()).prettyPrint();
+}
+
+// deprecated
+function st_pushUrl() {
+	(new simpletrack()).trackPage();
 }

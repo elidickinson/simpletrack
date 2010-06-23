@@ -16,7 +16,7 @@ On each page:
 
 <script type="text/javascript" src="st.js"></script>
 <script type="text/javascript">
-   st_pushUrl();
+   (new simpletrack()).trackPage()
 </script>
 
 
