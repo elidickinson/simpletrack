@@ -5,7 +5,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <script src="st.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+    <!-- // <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script> -->
     <script>
         st_pushUrl();
     </script>
@@ -22,7 +22,8 @@
 
 <pre id="output" class="output"></pre>
 <script>
-    $("pre#output").html((new simpletrack()).prettyPrint());
+    // $("pre#output").html((new simpletrack()).prettyPrint());
+    document.write(st_prettyPrint());
 </script>
 </body>
 </html>

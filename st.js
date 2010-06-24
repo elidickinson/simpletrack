@@ -48,7 +48,7 @@ function simpletrack() {
 			}
 			outputArr.push(tstamp + "\t" + uri);
 		}
-		return outputArr.join("\n");
+		return outputArr.join(" \n");
 	}
 	
 	var getTimestamp = function() {
@@ -106,7 +106,7 @@ function simpletrack() {
 // deprecated
 function st_prettyPrint() {
 	var st = new simpletrack();
-	return st.prettyPrint();
+	return "\n" + st.prettyPrint();
 }
 
 // deprecated
